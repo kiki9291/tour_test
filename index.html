@@ -1,205 +1,217 @@
-import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, MapPin, CheckCircle, Car, Thermometer, Coffee, Info, Printer, ChevronRight } from 'lucide-react';
-
-const App = () => {
-  const [generatedImage, setGeneratedImage] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  // 상단 헤더용 프리미엄 이미지 생성 (Imagen 4.0 사용)
-  useEffect(() => {
-    const generateHeaderImage = async () => {
-      const apiKey = "";
-      const prompt = "A ultra-modern, high-end premium hair salon interior with warm ambient lighting, marble floors, and minimalist wooden furniture. Professional and clean atmosphere, 8k resolution, architectural photography.";
-      
-      try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            instances: [{ prompt }],
-            parameters: { sampleCount: 1 }
-          })
-        });
-        const result = await response.json();
-        if (result.predictions && result.predictions[0]) {
-          setGeneratedImage(`data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`);
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아데르 언주역점 파트너 가이드 포스터</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@100;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Pretendard', sans-serif; 
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
         }
-      } catch (error) {
-        console.error("Image generation failed", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    generateHeaderImage();
-  }, []);
-
-  const handlePrint = () => {
-    window.print();
-  };
-
-  return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-8 font-sans print:p-0 print:bg-white">
-      {/* 컨트롤 바 - 인쇄용 (화면에서만 보임) */}
-      <div className="max-w-4xl mx-auto mb-6 flex justify-end no-print">
-        <button 
-          onClick={handlePrint}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition-all active:scale-95"
-        >
-          <Printer size={20} />
-          A4 사이즈로 인쇄/저장하기
-        </button>
-      </div>
-
-      {/* 메인 포스터 본체 */}
-      <div className="max-w-[210mm] mx-auto bg-white shadow-2xl rounded-[2rem] overflow-hidden border border-slate-100 print:shadow-none print:rounded-none print:border-none print:mx-0">
-        
-        {/* 상단 비주얼 영역 */}
-        <div className="relative h-[300px] bg-slate-900">
-          {loading ? (
-            <div className="absolute inset-0 flex items-center justify-center text-blue-200">
-              <div className="animate-pulse flex flex-col items-center">
-                <div className="w-12 h-12 border-4 border-blue-400 border-t-transparent rounded-full animate-spin mb-4"></div>
-                <p>프리미엄 가이드 이미지 생성 중...</p>
-              </div>
-            </div>
-          ) : (
-            <img src={generatedImage} alt="Salon Interior" className="w-full h-full object-cover opacity-60" />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent"></div>
-          <div className="absolute bottom-10 left-10 text-white">
-            <div className="bg-blue-600 text-[10px] font-black tracking-[0.2em] px-3 py-1 rounded-full w-fit mb-3">PARTNER SUCCESS GUIDE</div>
-            <h1 className="text-5xl font-black tracking-tighter mb-2 italic">ADERE UNJU</h1>
-            <p className="text-xl font-light text-slate-300">성공적인 시작을 위한 파트너 입주 가이드</p>
-          </div>
-        </div>
-
-        <div className="p-12 space-y-12">
-          
-          {/* 1. 입주 절차 로드맵 */}
-          <section>
-            <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center font-black">01</div>
-                <h2 className="text-2xl font-black text-slate-800 tracking-tight">입주 프로세스 로드맵</h2>
-            </div>
-            <div className="grid grid-cols-5 gap-4 relative">
-              <div className="absolute top-8 left-0 w-full h-0.5 bg-blue-50 -z-0"></div>
-              {[
-                { icon: "✍️", title: "계약 체결", desc: "보증금 및 렌트비 납부" },
-                { icon: "📋", title: "서류 제출", desc: "면허증/영업신고증 원본" },
-                { icon: "📱", title: "채널 합류", desc: "파트너센터 카톡 친구" },
-                { icon: "💻", title: "마케팅 세팅", desc: "네이버 플레이스/예약" },
-                { icon: "🎊", title: "공식 입주", desc: "오리엔테이션 및 오픈" }
-              ].map((step, i) => (
-                <div key={i} className="relative z-10 flex flex-col items-center text-center">
-                  <div className="w-16 h-16 bg-white border-2 border-blue-100 rounded-2xl flex items-center justify-center text-2xl shadow-sm mb-4">
-                    {step.icon}
-                  </div>
-                  <h4 className="font-bold text-slate-800 text-sm mb-1">{step.title}</h4>
-                  <p className="text-[10px] text-slate-400 leading-tight">{step.desc}</p>
-                  {i < 4 && <div className="absolute top-8 -right-4 text-blue-100"><ChevronRight size={16} /></div>}
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* 2. 핵심 운영 정보 & 마케팅 */}
-          <div className="grid grid-cols-2 gap-8">
-            <section className="bg-slate-50 rounded-[2rem] p-8 border border-slate-100">
-                <div className="flex items-center gap-2 mb-6 text-blue-600">
-                    <Clock size={24} />
-                    <h3 className="text-xl font-black tracking-tight">운영 시간 및 출입</h3>
-                </div>
-                <div className="space-y-4">
-                    <div className="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm">
-                        <span className="text-slate-500 font-bold">오픈 / 조명 ON</span>
-                        <span className="text-xl font-black text-slate-800">08:30 AM</span>
-                    </div>
-                    <div className="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm">
-                        <span className="text-slate-500 font-bold">클로즈 / 보안 경계</span>
-                        <span className="text-xl font-black text-slate-800">11:00 PM</span>
-                    </div>
-                    <p className="text-[11px] text-slate-400 leading-relaxed text-center mt-2">
-                        *이외 시간은 매장 출입이 절대 불가합니다.<br/>
-                        조명 및 보안 시스템은 자동 가동됩니다.
-                    </p>
-                </div>
-            </section>
-
-            <section className="bg-orange-50 rounded-[2rem] p-8 border border-orange-100">
-                <div className="flex items-center gap-2 mb-6 text-orange-600">
-                    <Calendar size={24} />
-                    <h3 className="text-xl font-black tracking-tight">마케팅 집중 지원</h3>
-                </div>
-                <div className="bg-white p-6 rounded-2xl shadow-sm text-center">
-                    <div className="text-4xl font-black text-orange-500 mb-2">초기 2개월</div>
-                    <p className="font-bold text-slate-700 mb-2">네이버 플레이스 상위 노출</p>
-                    <p className="text-[10px] text-slate-400">
-                        신규 파트너의 빠른 정착을 위해<br/>
-                        인기 스타일 노출 혜택을 집중 지원합니다.
-                    </p>
-                </div>
-            </section>
-          </div>
-
-          {/* 3. 특이사항 - 주차 및 관리 */}
-          <section className="bg-slate-900 rounded-[2rem] p-10 text-white">
-            <h3 className="text-2xl font-black mb-10 text-center tracking-tight">언주역점 파트너십 가이드라인</h3>
-            <div className="grid grid-cols-3 gap-8">
-                <div className="flex flex-col items-center text-center">
-                    <div className="w-14 h-14 bg-slate-800 rounded-2xl flex items-center justify-center text-2xl mb-4">🚗</div>
-                    <h4 className="font-bold text-blue-400 mb-2">지정 주차제</h4>
-                    <p className="text-[11px] text-slate-400">월 15만원 (VAT별도)<br/>선착순 구매 및 연장제</p>
-                </div>
-                <div className="flex flex-col items-center text-center">
-                    <div className="w-14 h-14 bg-slate-800 rounded-2xl flex items-center justify-center text-2xl mb-4">🌡️</div>
-                    <h4 className="font-bold text-orange-400 mb-2">공조기 관리</h4>
-                    <p className="text-[11px] text-slate-400">에어컨 사용 후<br/>자동 건조 설정 필수</p>
-                </div>
-                <div className="flex flex-col items-center text-center">
-                    <div className="w-14 h-14 bg-slate-800 rounded-2xl flex items-center justify-center text-2xl mb-4">🍱</div>
-                    <h4 className="font-bold text-teal-400 mb-2">취식 매너</h4>
-                    <p className="text-[11px] text-slate-400">냄새 심한 음식 금지<br/>간편 도시락 이용 권장</p>
-                </div>
-            </div>
-          </section>
-
-          {/* 4. 체크리스트 및 문의 */}
-          <div className="flex items-center gap-10 bg-blue-50 p-8 rounded-[2rem] border border-blue-100">
-            <div className="flex-1">
-                <h3 className="text-xl font-black text-blue-900 mb-4">최종 체크리스트</h3>
-                <div className="grid grid-cols-2 gap-y-2">
-                    {['영업신고/면허증 원본', '가격표 PDF용 데이터', '개인 소모품 및 롯드', '자외선 소독기 구비', '카톡 채널 친구추가', '오픈채팅방 입장'].map((item, i) => (
-                        <div key={i} className="flex items-center gap-2 text-xs text-blue-800 font-medium">
-                            <CheckCircle size={14} className="text-blue-500" /> {item}
-                        </div>
-                    ))}
-                </div>
-            </div>
-            <div className="w-[1px] h-20 bg-blue-200"></div>
-            <div className="text-center">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Support Channel</p>
-                <p className="text-2xl font-black text-blue-600 mb-2">@aderepartner</p>
-                <div className="bg-white px-4 py-1 rounded-full text-[10px] font-bold text-blue-400 border border-blue-100 italic">평일 09:30 - 17:30</div>
-            </div>
-          </div>
-
-        </div>
-
-        <footer className="bg-slate-50 py-8 text-center border-t border-slate-100">
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-tighter">Adere Unju Station Partner Success Team</p>
-        </footer>
-      </div>
-
-      <style jsx>{`
+        .a4-page {
+            width: 210mm;
+            height: 296mm;
+            margin: 20px auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .gradient-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+        }
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: #1e3a8a;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3b82f6;
+            padding-bottom: 8px;
+            width: fit-content;
+        }
+        .grid-container {
+            padding: 40px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+        .info-card {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid #e2e8f0;
+        }
+        .step-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            flex: 1;
+        }
+        .step-circle {
+            width: 50px;
+            height: 50px;
+            background: #3b82f6;
+            color: white;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
         @media print {
-          .no-print { display: none; }
-          body { background: white; padding: 0; }
-          .min-h-screen { min-height: auto; }
+            body { background: none; margin: 0; }
+            .a4-page { margin: 0; box-shadow: none; border: none; }
+            .no-print { display: none; }
         }
-      `}</style>
-    </div>
-  );
-};
+    </style>
+</head>
+<body>
 
-export default App;
+    <div class="no-print flex justify-center py-6 bg-slate-800 text-white gap-4">
+        <p class="flex items-center">💡 우측 상단 <b>Preview</b>를 누르면 이미지가 보입니다!</p>
+        <button onclick="window.print()" class="bg-blue-500 px-6 py-2 rounded-lg font-bold hover:bg-blue-400 transition-colors">A4 인쇄 / PDF 저장</button>
+    </div>
+
+    <div class="a4-page">
+        <!-- Header -->
+        <div class="gradient-header">
+            <p class="tracking-[0.3em] font-light text-blue-200 mb-2">ADERE PARTNER SUCCESS GUIDE</p>
+            <h1 class="text-6xl font-black italic tracking-tighter">ADERE UNJU</h1>
+            <div class="h-1 w-24 bg-orange-500 mt-4"></div>
+            <p class="mt-4 text-xl font-light">성공적인 매장 운영을 위한 입주 가이드</p>
+        </div>
+
+        <div class="grid-container">
+            <!-- Roadmap -->
+            <section>
+                <h2 class="section-title">01. 입주 로드맵</h2>
+                <div class="flex justify-between items-start gap-2 relative">
+                    <div class="absolute top-6 left-0 w-full h-1 bg-blue-50 -z-10"></div>
+                    <div class="step-item">
+                        <div class="step-circle">1</div>
+                        <h3 class="font-bold text-slate-800">계약 체결</h3>
+                        <p class="text-[10px] text-slate-400">룸 확정 및 계약서 작성</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-circle">2</div>
+                        <h3 class="font-bold text-slate-800">서류 제출</h3>
+                        <p class="text-[10px] text-slate-400">면허증/영업신고증 원본</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-circle">3</div>
+                        <h3 class="font-bold text-slate-800">채널 합류</h3>
+                        <p class="text-[10px] text-slate-400">파트너센터 카톡 친구</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-circle">4</div>
+                        <h3 class="font-bold text-slate-800">온라인 세팅</h3>
+                        <p class="text-[10px] text-slate-400">네이버 플레이스/예약</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-circle">5</div>
+                        <h3 class="font-bold text-slate-800">공식 오픈</h3>
+                        <p class="text-[10px] text-slate-400">OT 및 영업 개시</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Operating & Marketing -->
+            <div class="grid grid-cols-2 gap-8">
+                <div class="info-card">
+                    <h3 class="text-blue-600 font-black mb-4 flex items-center gap-2">🕒 운영 시간 및 보안</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between border-b pb-2">
+                            <span class="text-slate-500 text-sm">오픈 / 조명 ON</span>
+                            <span class="font-black">08:30 AM</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-2">
+                            <span class="text-slate-500 text-sm">클로즈 / 보안경계</span>
+                            <span class="font-black">11:00 PM</span>
+                        </div>
+                        <p class="text-[10px] text-slate-400 leading-tight">운영 시간 외 매장 출입은 절대 불가하며 보안 시스템이 자동으로 가동됩니다.</p>
+                    </div>
+                </div>
+                <div class="info-card border-orange-200 bg-orange-50">
+                    <h3 class="text-orange-600 font-black mb-4 flex items-center gap-2">📈 마케팅 지원 혜택</h3>
+                    <div class="text-center">
+                        <div class="text-3xl font-black text-orange-500 mb-1">초기 2개월</div>
+                        <p class="text-sm font-bold text-slate-700">네이버 플레이스 상위 노출</p>
+                        <p class="text-[9px] text-slate-400 mt-2">신규 파트너의 빠른 안착을 위해 인기 스타일 노출을 적극 지원합니다.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Policies -->
+            <section class="bg-slate-900 text-white p-8 rounded-[2rem]">
+                <h2 class="text-center text-xl font-black mb-8 tracking-wider">언주역점 파트너십 가이드라인</h2>
+                <div class="grid grid-cols-3 gap-6 text-center">
+                    <div>
+                        <div class="text-3xl mb-2">🚗</div>
+                        <h4 class="font-bold text-blue-400 text-sm mb-1">지정 주차제</h4>
+                        <p class="text-[10px] text-slate-400">월 15만원(VAT별도)<br>선착순 구매 및 연장제</p>
+                    </div>
+                    <div>
+                        <div class="text-3xl mb-2">🌡️</div>
+                        <h4 class="font-bold text-orange-400 text-sm mb-1">공조기 관리</h4>
+                        <p class="text-[10px] text-slate-400">에어컨 사용 후<br>자동 건조 설정 필수</p>
+                    </div>
+                    <div>
+                        <div class="text-3xl mb-2">🍱</div>
+                        <h4 class="font-bold text-teal-400 text-sm mb-1">취식 매너</h4>
+                        <p class="text-[10px] text-slate-400">냄새 심한 음식 금지<br>간편 도시락 권장</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Checklist -->
+            <div class="flex items-center gap-8 bg-blue-50 p-8 rounded-[2rem] border border-blue-100">
+                <div class="flex-1">
+                    <h3 class="text-lg font-black text-blue-900 mb-4">최종 체크리스트</h3>
+                    <div class="grid grid-cols-2 gap-y-2 text-xs text-blue-800">
+                        <div>• 영업신고/면허증 원본</div>
+                        <div>• 자외선 소독기 구비</div>
+                        <div>• 가격표 PDF용 데이터</div>
+                        <div>• 카톡 채널 친구추가</div>
+                        <div>• 개인 소모품 및 롯드</div>
+                        <div>• 오픈채팅방 입장</div>
+                    </div>
+                </div>
+                <div class="w-[1px] h-16 bg-blue-200"></div>
+                <div class="text-center">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Support</p>
+                    <p class="text-xl font-black text-blue-600">@aderepartner</p>
+                    <p class="text-[9px] text-blue-300">평일 09:30 - 17:30</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="bg-slate-50 py-6 text-center border-t border-slate-100">
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Adere Unju Station Partner Success Team</p>
+        </div>
+    </div>
+
+</body>
+</html>
